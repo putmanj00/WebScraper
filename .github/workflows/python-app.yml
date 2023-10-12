@@ -19,15 +19,18 @@ jobs:
         python-version: 3.x  # Replace with your desired Python version
 
     - name: Install dependencies
-      run: pip install -r requirements.txt
+      run: pip install -r requirements.txt  # Replace with your requirements file name
 
     - name: Run scraping script
-      run: python gptTest.py
+      run: python your_scraping_script.py  # Replace with your Python script name
 
-    # - name: Upload results
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: results
-    #     path: ./
+    - name: Move XML result to repository root
+      run: mv path/to/output/your_result.xml ./your_result.xml
+
+    - name: Upload XML result
+      uses: actions/upload-artifact@v2
+      with:
+        name: results
+        path: your_result.xml  # This will upload the XML result to the repository root
 
     # Add additional steps if needed, e.g., storing the results, deploying, etc.

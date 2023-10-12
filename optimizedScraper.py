@@ -1,6 +1,5 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-import time
 import openpyxl
 
 import requests
@@ -54,12 +53,8 @@ for x in strainAlphabeticalList:
     newUrl = url + x + "/"
     driver.get(newUrl)
 
-    # Wait for the page to load
-    time.sleep(5)  # Adjust the wait time as needed
-
     # Find all rows with strain data
     strain_rows = driver.find_elements(By.CSS_SELECTOR, "table#cannabis-strain-table tbody tr")
-
 
     # Loop through each row of strain data
     for row in strain_rows:
@@ -84,10 +79,10 @@ for x in strainAlphabeticalList:
         sheet[f"G{row_num}"] = description
         
 
-    # Save the Excel workbook
-    workbook.save("new_strain_data.xlsx")
+# Save the Excel workbook
+workbook.save("new_strain_data.xlsx")
 
-    # Close the browser
+# Close the browser
 driver.quit()
 
 print("Data has been scraped and exported to strain_data.xlsx")
