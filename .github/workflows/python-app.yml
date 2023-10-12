@@ -11,10 +11,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: 3.x  # Replace with your desired Python version
 
@@ -22,15 +22,12 @@ jobs:
       run: pip install -r requirements.txt  # Replace with your requirements file name
 
     - name: Run scraping script
-      run: python your_scraping_script.py  # Replace with your Python script name
-
-    - name: Move XML result to repository root
-      run: mv path/to/output/your_result.xml ./your_result.xml
+      run: python optimizedScraper.py  # Replace with your Python script name
 
     - name: Upload XML result
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: results
-        path: your_result.xml  # This will upload the XML result to the repository root
+        path: ./new_strain_data.xlsx  # This will upload the XML result to the repository root
 
     # Add additional steps if needed, e.g., storing the results, deploying, etc.
