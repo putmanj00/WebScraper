@@ -22,7 +22,7 @@ jobs:
       run: pip install -r requirements.txt  # Replace with your requirements file name
 
     - name: Run scraping script
-      run: python optimizedScraper.py  # Replace with your Python script name
+      run: python newSnak.py  # Replace with your Python script name
 
     - name: Upload XML result
       uses: actions/upload-artifact@v3
