@@ -41,6 +41,8 @@ def scrape_strain_description(strain_name, breeder):
         for p in table.find_all('p'):
             strain_description += p.text.strip() + " "
         strain_description = strain_description.strip()
+        # Replace "±" with "+/-"
+        strain_description = strain_description.replace("±", "+/-")
 
     return strain_description
 
