@@ -21,6 +21,12 @@ jobs:
     - name: Install dependencies
       run: pip install -r requirements.txt  # Replace with your requirements file name
 
+    - name: Print from test.py
+      run: |
+          export INPUT_STORE=$(python newSnak.py)
+          echo "Script Status: "
+          echo $INPUT_STORE
+
     - name: Run scraping script
       run: python newSnak.py  # Replace with your Python script name
 
