@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import openpyxl
+import string
 
 import requests
 from bs4 import BeautifulSoup
@@ -43,8 +44,14 @@ def scrape_strain_description(strain_name, breeder):
         strain_description = strain_description.strip()
         # Replace "±" with "+/-"
         strain_description = strain_description.replace("±", "+/-")
+        strain_description = strain_description.replace("%", "%")
 
     return strain_description
+
+def sanitize_string(input_str):
+    # Remove newline characters and other non-printable characters
+    sanitized_str = ''.join(char for char in input_str if char in string.printable)
+    return sanitized_str
 
 # Set up Selenium webdriver
 options = webdriver.ChromeOptions()
@@ -66,7 +73,8 @@ for x in strainAlphabeticalList:
         indoorOutdoor = row.find_element(By.CSS_SELECTOR, "td.x20 img[height='14']").get_attribute("title")
         floweringTime = row.find_element(By.CSS_SELECTOR, "td.graukleinX span").text
         femaleSeeds = row.find_element(By.CSS_SELECTOR, "td img[width='12']").get_attribute("title")
-        description = scrape_strain_description(strain, breeder)
+        webDescription = scrape_strain_description(strain, breeder)
+        description = sanitize_string(webDescription)
         
         # Find the first empty row in the Excel sheet
         row_num = sheet.max_row + 1
