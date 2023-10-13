@@ -4,8 +4,8 @@ import asyncio
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import openpyxl
-import aiohttp
 from aiohttp import ClientSession
+from bs4 import BeautifulSoup
 
 # URL of the website to scrape
 url = "https://en.seedfinder.eu/database/strains/alphabetical/"
@@ -93,7 +93,7 @@ async def process_alphabetical_list(session, driver, x):
         sheet[f"E{row_num}"] = floweringTime
         sheet[f"F{row_num}"] = femaleSeeds
         sheet[f"G{row_num}"] = description
-        
+
     print(f"Data written to Excel for page '{x}'.")
 
 async def main():
@@ -101,7 +101,7 @@ async def main():
     options.add_argument("--headless")
     driver = webdriver.Chrome(options=options)
 
-    async with aiohttp.ClientSession() as session:
+    async with ClientSession() as session:
         tasks = [process_alphabetical_list(session, driver, x) for x in strainAlphabeticalList]
         await asyncio.gather(*tasks)
 
