@@ -57,6 +57,8 @@ async def process_alphabetical_list(session, driver, x):
 
     tasks = []
 
+    print(f"Scraping data for page '{x}'...")
+
     for row in strain_rows:
         strain = row.find_element(By.CSS_SELECTOR, "th.xs1 a").text
         breeder = row.find_element(By.CSS_SELECTOR, "td.graukleinX.rechts.nowrap").text
@@ -68,6 +70,8 @@ async def process_alphabetical_list(session, driver, x):
         tasks.append(scrape_strain_description(session, strain, breeder))
 
     descriptions = await asyncio.gather(*tasks)
+
+    print(f"Data scraped for page '{x}'. Writing to Excel...")
 
     for i, description in enumerate(descriptions):
         row = strain_rows[i]
@@ -89,6 +93,8 @@ async def process_alphabetical_list(session, driver, x):
         sheet[f"E{row_num}"] = floweringTime
         sheet[f"F{row_num}"] = femaleSeeds
         sheet[f"G{row_num}"] = description
+        
+    print(f"Data written to Excel for page '{x}'.")
 
 async def main():
     options = webdriver.ChromeOptions()
