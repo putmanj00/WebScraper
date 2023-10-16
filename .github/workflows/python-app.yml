@@ -23,7 +23,7 @@ jobs:
 
     - name: Print from test.py
       run: |
-          export INPUT_STORE=$(python newSnak.py)
+          export INPUT_STORE=$(python optimizedScraper.py)
           echo "Script Status: "
           echo $INPUT_STORE
 

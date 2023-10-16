@@ -6,12 +6,14 @@ from selenium.webdriver.common.by import By
 import openpyxl
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
+import re
 
 # URL of the website to scrape
 url = "https://en.seedfinder.eu/database/strains/alphabetical/"
 
 # Alphabetical list of pages for strains
-strainAlphabeticalList = ["", "1234567890", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+# strainAlphabeticalList = ["", "1234567890", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+strainAlphabeticalList = [""]
 
 # Create a new Excel workbook
 workbook = openpyxl.Workbook()
@@ -34,16 +36,23 @@ def sanitize_string(input_str):
 async def scrape_strain_description(session, strain_name, breeder):
     url = f"https://en.seedfinder.eu/strain-info/{strain_name.replace(' ', '_')}/{breeder.replace(' ', '_')}/"
 
-    async with session.get(url) as response:
-        html = await response.text()
+    async with session.get(url, ssl=False) as response:
+        try:
+            html = await response.text(encoding='UTF-8')
+        except UnicodeDecodeError:
+            print(f"Error decoding response at {url}")
+            return ""
+    
         strain_soup = BeautifulSoup(html, "html.parser")
 
         table = strain_soup.find('div', class_='partInnerDiv')
         strain_description = ""
         if table:
             for p in table.find_all('p'):
-                strain_description += p.text.strip() + " "
+                strain_description += p.text.strip().replace("\n", "")
             strain_description = strain_description.strip()
+            strain_description = strain_description.replace("±", "+/-")
+            # strain_description = re.sub(r'[^\x00-\x7F]+', '', strain_description)
 
         return sanitize_string(strain_description)
 
@@ -114,4 +123,4 @@ async def main():
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(print(main()))
+    loop.run_until_complete(main())

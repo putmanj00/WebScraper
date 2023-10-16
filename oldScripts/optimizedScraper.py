@@ -11,7 +11,8 @@ from openpyxl import load_workbook
 url = "https://en.seedfinder.eu/database/strains/alphabetical/"
 
 # Alphabetical list of pages for strains
-strainAlphabeticalList = ["", "1234567890", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+# strainAlphabeticalList = ["", "1234567890", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+strainAlphabeticalList = ["x", "a"]
 
 # Create a new Excel workbook
 workbook = openpyxl.Workbook()
@@ -90,7 +91,7 @@ for x in strainAlphabeticalList:
         
 
 # Save the Excel workbook
-workbook.save("new_strain_data.xlsx")
+workbook.save("new_strain_data2.xlsx")
 
 # Close the browser
 driver.quit()
