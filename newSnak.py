@@ -14,18 +14,20 @@ url = "https://en.seedfinder.eu/database/strains/alphabetical/"
 # Alphabetical list of pages for strains
 strainAlphabeticalList = ["", "1234567890", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 
-# Create a new Excel workbook
-workbook = openpyxl.Workbook()
-sheet = workbook.active
+def create_sheet(workbook, sheet_name):
+    # Create a new sheet in the workbook
+    new_sheet = workbook.create_sheet(title=sheet_name)
 
-# Write headers to the Excel sheet
-sheet["A1"] = "Strain"
-sheet["B1"] = "Breeder"
-sheet["C1"] = "Indica or Sativa"
-sheet["D1"] = "Indoor or Outdoor"
-sheet["E1"] = "Flowering Time (Days)"
-sheet["F1"] = "Female Seeds?"
-sheet["G1"] = "Description"
+    # Write headers to the Excel sheet
+    new_sheet["A1"] = "Strain"
+    new_sheet["B1"] = "Breeder"
+    new_sheet["C1"] = "Indica or Sativa"
+    new_sheet["D1"] = "Indoor or Outdoor"
+    new_sheet["E1"] = "Flowering Time (Days)"
+    new_sheet["F1"] = "Female Seeds?"
+    new_sheet["G1"] = "Description"
+
+    return new_sheet
 
 def sanitize_string(input_str):
     # Remove newline characters and other non-printable characters
@@ -58,7 +60,7 @@ async def scrape_strain_description(session, strain_name, breeder):
 
         return sanitize_string(strain_description)
 
-async def process_alphabetical_list(session, driver, x):
+async def process_alphabetical_list(session, driver, x, sheet):
     newUrl = url + x + "/"
     driver.get(newUrl)
 
@@ -112,9 +114,14 @@ async def main():
     options.add_argument("--headless")
     driver = webdriver.Chrome(options=options)
 
+    # Create a new Excel workbook
+    workbook = openpyxl.Workbook()
+
     async with ClientSession() as session:
-        tasks = [process_alphabetical_list(session, driver, x) for x in strainAlphabeticalList]
-        await asyncio.gather(*tasks)
+        for x in strainAlphabeticalList:
+            # Create a new sheet for each character
+            sheet = create_sheet(workbook, x)
+            await process_alphabetical_list(session, driver, x, sheet)
 
     driver.quit()
 
