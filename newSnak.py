@@ -12,7 +12,7 @@ import re
 url = "https://en.seedfinder.eu/database/strains/alphabetical/"
 
 # Alphabetical list of pages for strains
-strainAlphabeticalList = ["o"]
+strainAlphabeticalList = ["s"]
 
 # Create a new Excel workbook
 workbook = openpyxl.Workbook()
