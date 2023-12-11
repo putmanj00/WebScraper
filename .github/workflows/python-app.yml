@@ -34,6 +34,6 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: results
-        path: ./new_strain_data.xlsx  # This will upload the XML result to the repository root
+        path: ./cannabis_strains_data.xlsx  # This will upload the XML result to the repository root
 
     # Add additional steps if needed, e.g., storing the results, deploying, etc.

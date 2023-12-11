@@ -1,135 +1,104 @@
-import string
-import time
-import asyncio
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-import openpyxl
-from aiohttp import ClientSession
+import requests
 from bs4 import BeautifulSoup
-import re
+import pandas as pd
 
-# URL of the website to scrape
-url = "https://en.seedfinder.eu/database/strains/alphabetical/"
+# Function to extract description from strain-specific page
+def get_description(strain_url):
+    response = requests.get(strain_url)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content, "html.parser")
+        part_inner_div = soup.find("div", class_="partInnerDiv")
+        paragraphs = part_inner_div.find_all("p", class_=lambda x: x and "top05em" in x)
+        description = " ".join([p.get_text(strip=True) for p in paragraphs])
+        return description
+    else:
+        print(f"Failed to fetch the strain-specific page. Status code: {response.status_code}")
+        return ""
 
-# Alphabetical list of pages for strains
-strainAlphabeticalList = ["", "1234567890", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+# Define the URL for the "a" page
+url = "https://en.seedfinder.eu/database/strains/alphabetical/a/"
 
-def create_sheet(workbook, sheet_name):
-    # Create a new sheet in the workbook
-    new_sheet = workbook.create_sheet(title=sheet_name)
+# Send a GET request to the URL
+response = requests.get(url)
 
-    # Write headers to the Excel sheet
-    new_sheet["A1"] = "Strain"
-    new_sheet["B1"] = "Breeder"
-    new_sheet["C1"] = "Indica or Sativa"
-    new_sheet["D1"] = "Indoor or Outdoor"
-    new_sheet["E1"] = "Flowering Time (Days)"
-    new_sheet["F1"] = "Female Seeds?"
-    new_sheet["G1"] = "Description"
+# Check if the request was successful (status code 200)
+if response.status_code == 200:
+    # Parse the HTML content of the page
+    soup = BeautifulSoup(response.content, "html.parser")
 
-    return new_sheet
+    # Find the table with the specified ID
+    table = soup.find("table", {"id": "cannabis-strain-table"})
 
-def sanitize_string(input_str):
-    # Remove newline characters and other non-printable characters
-    sanitized_str = ''.join(char for char in input_str if char in string.printable)
-    return sanitized_str
+    # Check if the table is found
+    if table:
+        # Initialize lists to store strain, breeder, indica/sativa, indoor/outdoor, flowering time, female seeds, and description information
+        strains = []
+        breeders = []
+        indica_sativa = []
+        indoor_outdoor = []
+        flowering_time = []
+        female_seeds = []
+        descriptions = []  # New list for description information
 
-def clean_for_excel(value):
-    # Replace non-printable ASCII characters with a space
-    cleaned_value = re.sub(r'[^\x20-\x7E]', ' ', value)
-    return cleaned_value
+        # Iterate over each table row
+        for row in table.find_all("tr"):
+            # Find the table header within the row
+            header = row.find("th", {"class": "xs1"})
 
-async def scrape_strain_description(session, strain_name, breeder):
-    url = f"https://en.seedfinder.eu/strain-info/{strain_name.replace(' ', '_')}/{breeder.replace(' ', '_')}/"
+            # Check if the header is found
+            if header:
+                # Extract the strain and breeder from the href attribute
+                link = header.find("a")
+                if link:
+                    strain = link.get_text(strip=True)
+                    breeder = link["title"].split("(")[-1].strip(")")
 
-    async with session.get(url, ssl=False) as response:
-        try:
-            html = await response.text(encoding='UTF-8')
-        except UnicodeDecodeError:
-            print(f"Error decoding response at {url}")
-            return ""
-    
-        strain_soup = BeautifulSoup(html, "html.parser")
+                    # Append strain and breeder to the lists
+                    strains.append(strain)
+                    breeders.append(breeder)
 
-        table = strain_soup.find('div', class_='partInnerDiv')
-        strain_description = ""
-        if table:
-            for p in table.find_all('p'):
-                strain_description += p.text.strip().replace("\n", "")
-            strain_description = strain_description.strip()
+                    # Find the table data cells for indica/sativa, indoor/outdoor, flowering time, and female seeds
+                    cells = row.find_all("td")
 
-        return sanitize_string(strain_description)
+                    # Extract indica/sativa information
+                    indica_sativa.append(cells[0].img["title"] if cells else "")
 
-async def process_alphabetical_list(session, driver, x, sheet):
-    newUrl = url + x + "/"
-    driver.get(newUrl)
+                    # Extract indoor/outdoor information
+                    indoor_outdoor.append(cells[1].img["title"] if len(cells) > 1 else "")
 
-    time.sleep(5)  # Adjust the wait time as needed
+                    # Extract flowering time information
+                    flowering_time.append(cells[2].span["title"] if len(cells) > 2 else "")
 
-    strain_rows = driver.find_elements(By.CSS_SELECTOR, "table#cannabis-strain-table tbody tr")
+                    # Extract female seeds information
+                    female_seeds.append(cells[3].img["title"] if len(cells) > 3 else "")
 
-    tasks = []
+                    # Extract strain-specific page URL and get description
+                    strain_url = f"https://en.seedfinder.eu/{link['href']}"
+                    description = get_description(strain_url)
+                    descriptions.append(description)
 
-    print(f"Scraping data for page '{x}'...")
+        # Now, you have lists with all the information
+        # Create a DataFrame using pandas
+        data = {
+            "Strain": strains,
+            "Breeder": breeders,
+            "Indica or Sativa": indica_sativa,
+            "Indoor or Outdoor": indoor_outdoor,
+            "Flowering Time(Days)": flowering_time,
+            "Female Seeds(?)": female_seeds,
+            "Description": descriptions,  # Add the new column
+        }
 
-    for row in strain_rows:
-        strain = row.find_element(By.CSS_SELECTOR, "th.xs1 a").text
-        breeder = row.find_element(By.CSS_SELECTOR, "td.graukleinX.rechts.nowrap").text
-        indicaSativa = row.find_element(By.CSS_SELECTOR, "td img[width='20']").get_attribute("title")
-        indoorOutdoor = row.find_element(By.CSS_SELECTOR, "td.x20 img[height='14']").get_attribute("title")
-        floweringTime = row.find_element(By.CSS_SELECTOR, "td.graukleinX span").text
-        femaleSeeds = row.find_element(By.CSS_SELECTOR, "td img[width='12']").get_attribute("title")
-        
-        tasks.append(scrape_strain_description(session, strain, breeder))
+        df = pd.DataFrame(data)
 
-    descriptions = await asyncio.gather(*tasks)
+        # Save the DataFrame to an Excel spreadsheet
+        excel_writer = pd.ExcelWriter("cannabis_strains_data.xlsx", engine="xlsxwriter")
+        df.to_excel(excel_writer, sheet_name="Cannabis Strains", index=False)
+        excel_writer.save()
 
-    print(f"Data scraped for page '{x}'. Writing to Excel...")
+        print("Data saved to cannabis_strains_data.xlsx")
 
-    for i, description in enumerate(descriptions):
-        row = strain_rows[i]
-        strain = row.find_element(By.CSS_SELECTOR, "th.xs1 a").text
-        breeder = row.find_element(By.CSS_SELECTOR, "td.graukleinX.rechts.nowrap").text
-        indicaSativa = row.find_element(By.CSS_SELECTOR, "td img[width='20']").get_attribute("title")
-        indoorOutdoor = row.find_element(By.CSS_SELECTOR, "td.x20 img[height='14']").get_attribute("title")
-        floweringTime = row.find_element(By.CSS_SELECTOR, "td.graukleinX span").text
-        femaleSeeds = row.find_element(By.CSS_SELECTOR, "td img[width='12']").get_attribute("title")
-
-        # Find the first empty row in the Excel sheet
-        row_num = sheet.max_row + 1
-
-        # Write data to the Excel sheet
-        sheet[f"A{row_num}"] = clean_for_excel(strain)
-        sheet[f"B{row_num}"] = clean_for_excel(breeder)
-        sheet[f"C{row_num}"] = clean_for_excel(indicaSativa)
-        sheet[f"D{row_num}"] = clean_for_excel(indoorOutdoor)
-        sheet[f"E{row_num}"] = clean_for_excel(floweringTime)
-        sheet[f"F{row_num}"] = clean_for_excel(femaleSeeds)
-        sheet[f"G{row_num}"] = clean_for_excel(description)
-
-    print(f"Data written to Excel for page '{x}'.")
-
-async def main():
-    options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
-    driver = webdriver.Chrome(options=options)
-
-    # Create a new Excel workbook
-    workbook = openpyxl.Workbook()
-
-    async with ClientSession() as session:
-        for x in strainAlphabeticalList:
-            # Create a new sheet for each character
-            sheet = create_sheet(workbook, x)
-            await process_alphabetical_list(session, driver, x, sheet)
-
-    driver.quit()
-
-    # Save the Excel workbook
-    workbook.save("new_strain_data.xlsx")
-
-    print("Data has been scraped and exported to strain_data.xlsx")
-
-if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    else:
+        print("Table not found on the page.")
+else:
+    print("Failed to fetch the page. Status code:", response.status_code)
