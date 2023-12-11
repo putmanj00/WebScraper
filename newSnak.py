@@ -1,19 +1,42 @@
 import pandas as pd
+import requests
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import Options as ChromeOptions
 
 # Function to get description from strain-specific page
 def get_description(url):
-    driver.get(url)
-    part_inner_div = driver.find_element(By.CLASS_NAME, 'partInnerDiv')
-    paragraphs = part_inner_div.find_elements(By.XPATH, "//p[@class='top05em justi left']")
-    description = ' '.join(paragraph.text.strip() for paragraph in paragraphs)
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    part_inner_div = soup.find('div', class_='partInnerDiv')
+    paragraphs = part_inner_div.find_all('p', class_='top05em justi left')
+    description = ' '.join(paragraph.get_text(strip=True) for paragraph in paragraphs)
     return description
+
+# Set up ChromeOptions
+chrome_options = ChromeOptions()
+chrome_options.add_argument('--headless')
+chrome_options.add_argument('--disable-gpu')
+
+# Set up ChromeService
+chrome_service = ChromeService(executable_path="/path/to/chromedriver")  # Replace with the path to chromedriver
+
+# Create a Chrome driver instance
+driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
 
 # URL for the "x" page
 url = "https://en.seedfinder.eu/database/strains/alphabetical/x/"
+
+# Send an HTTP request to the URL
+response = requests.get(url)
+
+# Parse the HTML content of the page
+soup = BeautifulSoup(response.content, "html.parser")
+
+# Find the cannabis strain table
+table = soup.find("table", {"id": "cannabis-strain-table"})
 
 # Lists to store data
 strains = []
@@ -24,50 +47,36 @@ flowering_time_list = []
 female_seeds_list = []
 descriptions = []
 
-# Set up Chrome options
-chrome_options = Options()
-chrome_options.add_argument('--no-sandbox')
-chrome_options.add_argument('--disable-dev-shm-usage')
-
-# Use the non-headless version of Chrome
-driver_path = "/usr/bin/chromedriver"  # Adjust the path if needed
-chrome_service = ChromeService(executable_path=driver_path)
-
-# Initialize Chrome WebDriver
-driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
-
-# Send an HTTP request to the URL
-driver.get(url)
-
-# Find the cannabis strain table
-table = driver.find_element(By.ID, "cannabis-strain-table")
-
 # Iterate over each table row
-for row in table.find_elements(By.TAG_NAME, "tr")[1:]:
-    header = row.find_element(By.CLASS_NAME, "xs1")
-    link = header.find_element(By.TAG_NAME, "a")
-    strain = link.text.strip()
-    breeder = link.get_attribute("title").split("(")[-1].strip(")")
+for row in table.find_all("tr"):
+    header = row.find("th", {"class": "xs1"})
+    if header:
+        link = header.find("a")
+        if link:
+            strain = link.get_text(strip=True)
+            breeder = link["title"].split("(")[-1].strip(")")
 
-    try:
-        indica_sativa_value = row.find_element(By.CSS_SELECTOR, "td img[width='20']").get_attribute("title")
-        indoor_outdoor_value = row.find_element(By.CSS_SELECTOR, "td.x20 img[height='14']").get_attribute("title")
-        flowering_time_value = row.find_element(By.CSS_SELECTOR, "td.graukleinX span").text
-        female_seeds_value = row.find_element(By.CSS_SELECTOR, "td img[width='12']").get_attribute("title")
+            try:
 
-        strain_url = f"https://en.seedfinder.eu/{link.get_attribute('href')}"
-        description = get_description(strain_url)
-        descriptions.append(description)
+                indica_sativa = row.find_element(By.CSS_SELECTOR, "td img[width='20']").get_attribute("title")
+                indoor_outdoor = row.find_element(By.CSS_SELECTOR, "td.x20 img[height='14']").get_attribute("title")
+                flowering_time = row.find_element(By.CSS_SELECTOR, "td.graukleinX span").text
+                female_seeds = row.find_element(By.CSS_SELECTOR, "td img[width='12']").get_attribute("title")
 
-        strains.append(strain)
-        breeders.append(breeder)
-        indica_sativa_list.append(indica_sativa_value)
-        indoor_outdoor_list.append(indoor_outdoor_value)
-        flowering_time_list.append(flowering_time_value)
-        female_seeds_list.append(female_seeds_value)
+                strain_url = f"https://en.seedfinder.eu/{link['href']}"
+                description = get_description(strain_url)
+                descriptions.append(description)
 
-    except Exception as e:
-        print(f"Failed to process data for strain '{strain}'. Error: {e}")
+                strains.append(strain)
+                breeders.append(breeder)
+                indica_sativa_list.append(indica_sativa)
+                indoor_outdoor_list.append(indoor_outdoor)
+                flowering_time_list.append(flowering_time)
+                female_seeds_list.append(female_seeds)
+
+            except AttributeError as e:
+                print(f"Failed to process data for strain '{strain}'. Error: {e}")
+                continue
 
 # Create a DataFrame from the lists
 df = pd.DataFrame({
@@ -85,6 +94,3 @@ excel_writer = pd.ExcelWriter("cannabis_strains_data.xlsx", engine="xlsxwriter")
 df.to_excel(excel_writer, sheet_name="Cannabis Strains", index=False)
 excel_writer.save()
 print("Data saved to cannabis_strains_data.xlsx")
-
-# Quit the WebDriver
-driver.quit()
