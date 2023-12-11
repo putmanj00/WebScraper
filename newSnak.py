@@ -2,7 +2,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.common.by import By  # Import the By class
+from selenium.webdriver.common.by import By
 
 # Function to get description from strain-specific page
 def get_description(url):
@@ -16,17 +16,14 @@ def get_description(url):
 # URL for the "x" page
 url = "https://en.seedfinder.eu/database/strains/alphabetical/x/"
 
-# Set up the Selenium WebDriver
-options = webdriver.ChromeOptions()
-options.add_argument('--headless')
-options.add_argument('--disable-gpu')
-driver = webdriver.Chrome(options=options)
-
 # Send an HTTP request to the URL
-driver.get(url)
+response = requests.get(url)
+
+# Parse the HTML content of the page
+soup = BeautifulSoup(response.content, "html.parser")
 
 # Find the cannabis strain table
-table = driver.find_element(By.ID, "cannabis-strain-table")
+table = soup.find("table", {"id": "cannabis-strain-table"})
 
 # Lists to store data
 strains = []
@@ -38,28 +35,28 @@ female_seeds_list = []
 descriptions = []
 
 # Iterate over each table row
-for row in table.find_elements(By.TAG_NAME, "tr"):
-    header = row.find_element(By.CLASS_NAME, "xs1")
+for row in table.find_all("tr"):
+    header = row.find("th", {"class": "xs1"})
     if header:
-        link = header.find_element(By.TAG_NAME, "a")
+        link = header.find_element(By.XPATH, ".//a")
         if link:
-            strain = link.text.strip()
-            breeder = link.get_attribute("title").split("(")[-1].strip(")")
+            strain = link.get_text(strip=True)
+            breeder = link["title"].split("(")[-1].strip(")")
 
             try:
                 # Extracting information for Indica or Sativa
-                indica_sativa = row.find_element(By.CSS_SELECTOR, "td.greenC[width='20'] img").get_attribute("title") if row.find_element(By.CSS_SELECTOR, "td.greenC[width='20'] img") else ""
+                indica_sativa = row.find("td", {"class": "greenC", "width": "20"}).img["title"] if row.find("td", {"class": "greenC", "width": "20"}) else ""
 
                 # Extracting information for Indoor or Outdoor
-                indoor_outdoor = row.find_element(By.CSS_SELECTOR, "td.x20 img[height='14']").get_attribute("title") if row.find_element(By.CSS_SELECTOR, "td.x20 img[height='14']") else ""
+                indoor_outdoor = row.find("td", {"class": "x20"}).img["title"] if row.find("td", {"class": "x20"}) else ""
 
                 # Extracting information for Flowering Time(Days)
-                flowering_time = row.find_element(By.CSS_SELECTOR, "td.graukleinX span").text if row.find_element(By.CSS_SELECTOR, "td.graukleinX span") else ""
+                flowering_time = row.find("td", {"class": "graukleinX"}).span.text if row.find("td", {"class": "graukleinX"}) else ""
 
                 # Extracting information for Female Seeds(?)
-                female_seeds = row.find_element(By.CSS_SELECTOR, "td.padL2[width='12'] img").get_attribute("title") if row.find_element(By.CSS_SELECTOR, "td.padL2[width='12'] img") else ""
+                female_seeds = row.find("td", {"class": "padL2", "width": "12"}).img["title"] if row.find("td", {"class": "padL2", "width": "12"}) else ""
 
-                strain_url = f"https://en.seedfinder.eu/{link.get_attribute('href')}"
+                strain_url = f"https://en.seedfinder.eu/{link['href']}"
                 description = get_description(strain_url)
                 descriptions.append(description)
 
@@ -87,8 +84,5 @@ df = pd.DataFrame({
 # Save the DataFrame to an Excel spreadsheet
 excel_writer = pd.ExcelWriter("cannabis_strains_data.xlsx", engine="xlsxwriter")
 df.to_excel(excel_writer, sheet_name="Cannabis Strains", index=False)
-excel_writer._save()
+excel_writer.save()
 print("Data saved to cannabis_strains_data.xlsx")
-
-# Close the WebDriver
-driver.quit()
