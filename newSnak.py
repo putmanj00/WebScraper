@@ -50,17 +50,18 @@ for row in table.find_all("tr"):
                 # Find the table data cells for indica/sativa, indoor/outdoor, flowering time, and female seeds
                 cells = row.find_all("td")
 
-                # Extract indica/sativa information
-                indica_sativa.append(cells[2].img["title"] if cells and cells[2].img and "width=\"20\"" in str(cells[2].img) else "")
+                # Extracting information for Indica or Sativa
+                indica_sativa = row.find_element(By.CSS_SELECTOR, "td img[width='20']").get_attribute("title")
 
-                # Extract indoor/outdoor information
-                indoor_outdoor.append(cells[3].img["title"] if len(cells) > 3 and cells[3].img and "width=\"13\"" in str(cells[3].img) else "")
+                # Extracting information for Indoor or Outdoor
+                indoor_outdoor = row.find_element(By.CSS_SELECTOR, "td.x20 img[height='14']").get_attribute("title")
 
-                # Extract flowering time information
-                flowering_time.append(cells[4].span["title"].replace("Flowering time in days: ", "") if len(cells) > 4 and cells[4].span and "class=\"graukleinX\"" in str(cells[4]) else "")
+                # Extracting information for Flowering Time(Days)
+                flowering_time = row.find_element(By.CSS_SELECTOR, "td.graukleinX span").text
 
-                # Extract female seeds information
-                female_seeds.append(cells[5].img["title"] if len(cells) > 5 and cells[5].img and "class=\"padL2\"" in str(cells[5].img) else "")
+                # Extracting information for Female Seeds(?)
+                female_seeds = row.find_element(By.CSS_SELECTOR, "td img[width='12']").get_attribute("title")
+
 
                 # Extract strain-specific page URL and get description
                 strain_url = f"https://en.seedfinder.eu/{link['href']}"
