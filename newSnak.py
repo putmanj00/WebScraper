@@ -1,9 +1,7 @@
 import pandas as pd
-import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-
 
 # Function to get description from strain-specific page
 def get_description(url):
@@ -30,10 +28,10 @@ table = soup.find("table", {"id": "cannabis-strain-table"})
 # Lists to store data
 strains = []
 breeders = []
-indica_sativa = []
-indoor_outdoor = []
-flowering_time = []
-female_seeds = []
+indica_sativa_list = []  # Renamed to avoid overwriting
+indoor_outdoor_list = []  # Renamed to avoid overwriting
+flowering_time_list = []  # Renamed to avoid overwriting
+female_seeds_list = []  # Renamed to avoid overwriting
 descriptions = []
 
 # Iterate over each table row
@@ -54,17 +52,20 @@ for row in table.find_all("tr"):
                 cells = row.find_all("td")
 
                 # Extracting information for Indica or Sativa
-                indica_sativa = row.find_element(By.CSS_SELECTOR, "td img[width='20']").get_attribute("title")
+                indica_sativa = cells[2].img["title"] if cells else ""
+                indica_sativa_list.append(indica_sativa)
 
                 # Extracting information for Indoor or Outdoor
-                indoor_outdoor = row.find_element(By.CSS_SELECTOR, "td.x20 img[height='14']").get_attribute("title")
+                indoor_outdoor = cells[3].img["title"] if cells else ""
+                indoor_outdoor_list.append(indoor_outdoor)
 
                 # Extracting information for Flowering Time(Days)
-                flowering_time = row.find_element(By.CSS_SELECTOR, "td.graukleinX span").text
+                flowering_time = cells[4].span["title"] if cells else ""
+                flowering_time_list.append(flowering_time)
 
                 # Extracting information for Female Seeds(?)
-                female_seeds = row.find_element(By.CSS_SELECTOR, "td img[width='12']").get_attribute("title")
-
+                female_seeds = cells[5].img["title"] if cells else ""
+                female_seeds_list.append(female_seeds)
 
                 # Extract strain-specific page URL and get description
                 strain_url = f"https://en.seedfinder.eu/{link['href']}"
@@ -82,15 +83,15 @@ for row in table.find_all("tr"):
 df = pd.DataFrame({
     'Strain': strains,
     'Breeder': breeders,
-    'Indica or Sativa': indica_sativa,
-    'Indoor or Outdoor': indoor_outdoor,
-    'Flowering Time(Days)': flowering_time,
-    'Female Seeds(?)': female_seeds,
+    'Indica or Sativa': indica_sativa_list,
+    'Indoor or Outdoor': indoor_outdoor_list,
+    'Flowering Time(Days)': flowering_time_list,
+    'Female Seeds(?)': female_seeds_list,
     'Description': descriptions
 })
 
 # Save the DataFrame to an Excel spreadsheet
 excel_writer = pd.ExcelWriter("cannabis_strains_data.xlsx", engine="xlsxwriter")
 df.to_excel(excel_writer, sheet_name="Cannabis Strains", index=False)
-excel_writer.close()  # Save the ExcelWriter object to save the file
+excel_writer.save()  # Save the ExcelWriter object to save the file
 print("Data saved to cannabis_strains_data.xlsx")
