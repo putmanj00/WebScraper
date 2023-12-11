@@ -1,9 +1,12 @@
 import os
 import requests
+import pandas as pd
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options as ChromeOptions
+from webdriver_manager.chrome import ChromeDriverManager
 
 # Function to get description from strain-specific page
 def get_description(url):
@@ -41,7 +44,6 @@ except Exception as e:
 
 # URL for the "x" page
 url = "https://en.seedfinder.eu/database/strains/alphabetical/x/"
-
 
 # Send an HTTP request to the URL
 response = requests.get(url)
@@ -107,3 +109,6 @@ excel_writer = pd.ExcelWriter("cannabis_strains_data.xlsx", engine="xlsxwriter")
 df.to_excel(excel_writer, sheet_name="Cannabis Strains", index=False)
 excel_writer.save()
 print("Data saved to cannabis_strains_data.xlsx")
+
+# Close the Chrome webdriver
+driver.quit()
