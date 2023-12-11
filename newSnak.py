@@ -27,7 +27,7 @@ def get_description(strain_url):
     return ""
 
 # Define the URL for the "a" page
-url = "https://en.seedfinder.eu/database/strains/alphabetical/x/"
+url = "https://en.seedfinder.eu/database/strains/alphabetical/b/"
 
 # Send a GET request to the URL
 try:
@@ -80,7 +80,7 @@ if response.status_code == 200:
                         indoor_outdoor.append(cells[1].img["title"] if len(cells) > 1 and cells[1].img else "")
 
                         # Extract flowering time information
-                        flowering_time.append(cells[2].span["title"] if len(cells) > 2 and cells[2].span else "")
+                        flowering_time.append(cells[2].span["text"] if len(cells) > 2 and cells[2].span else "")
 
                         # Extract female seeds information
                         female_seeds.append(cells[3].img["title"] if len(cells) > 3 and cells[3].img else "")
