@@ -2,6 +2,15 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
+# Function to get description from strain-specific page
+def get_description(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    part_inner_div = soup.find('div', class_='partInnerDiv')
+    paragraphs = part_inner_div.find_all('p', class_='top05em justi left')
+    description = ' '.join(paragraph.get_text(strip=True) for paragraph in paragraphs)
+    return description
+
 # URL for the "x" page
 url = "https://en.seedfinder.eu/database/strains/alphabetical/x/"
 
@@ -75,5 +84,5 @@ df = pd.DataFrame({
 # Save the DataFrame to an Excel spreadsheet
 excel_writer = pd.ExcelWriter("cannabis_strains_data.xlsx", engine="xlsxwriter")
 df.to_excel(excel_writer, sheet_name="Cannabis Strains", index=False)
-excel_writer.save()
+excel_writer._save()
 print("Data saved to cannabis_strains_data.xlsx")
