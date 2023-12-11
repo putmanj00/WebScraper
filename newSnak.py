@@ -16,7 +16,7 @@ def get_description(strain_url):
         return ""
 
 # Define the URL for the "a" page
-url = "https://en.seedfinder.eu/database/strains/alphabetical/a/"
+url = "https://en.seedfinder.eu/database/strains/alphabetical/x"
 
 # Send a GET request to the URL
 response = requests.get(url)
