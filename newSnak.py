@@ -48,7 +48,7 @@ for row in table.find_all("tr"):
 
                 indica_sativa = cells[2].img["title"] if len(cells) > 2 and cells[2].img else ""
                 indoor_outdoor = cells[3].img["title"] if len(cells) > 3 and cells[3].img else ""
-                flowering_time = cells[4].span["title"] if len(cells) > 4 and cells[4].span else ""
+                flowering_time = cells[4].find("span", class_="graukleinX").text if len(cells) > 4 and cells[4].find("span", class_="graukleinX") else ""
                 female_seeds = cells[5].img["title"] if len(cells) > 5 and cells[5].img else ""
 
                 strain_url = f"https://en.seedfinder.eu/{link['href']}"
