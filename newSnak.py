@@ -43,7 +43,7 @@ for row in table.find_all("tr"):
 
             try:
                 # Extracting information for Indica or Sativa
-                indica_sativa = row.find("td", {"class": "greenC", "width": "20"})
+                indica_sativa = row.find("td", {"width": "20"})
                 indica_sativa = indica_sativa.img["title"] if indica_sativa and indica_sativa.img else ""
 
                 # Extracting information for Indoor or Outdoor
