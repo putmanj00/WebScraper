@@ -82,5 +82,5 @@ df = pd.DataFrame({
 # Save the DataFrame to an Excel spreadsheet
 excel_writer = pd.ExcelWriter("cannabis_strains_data.xlsx", engine="xlsxwriter")
 df.to_excel(excel_writer, sheet_name="Cannabis Strains", index=False)
-excel_writer._save()
+excel_writer.save()
 print("Data saved to cannabis_strains_data.xlsx")
