@@ -20,7 +20,7 @@ flowering_time = []
 female_seeds = []
 descriptions = []
 # strainAlphabeticalList = ["", "1234567890", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-strainAlphabeticalList = ["x"]
+strainAlphabeticalList = ["b", "c"]
 # Iterate over each alphabet page
 for letter in strainAlphabeticalList:
     url = f'https://en.seedfinder.eu/database/strains/alphabetical/{letter}/'
