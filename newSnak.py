@@ -44,17 +44,22 @@ for row in table.find_all("tr"):
             breeder = link["title"].split("(")[-1].strip(")")
 
             try:
-                # Extracting information for Indica or Sativa
-                indica_sativa = row.find("td", {"class": "xs1"}).img["title"] if row.find("td", {"class": "xs1"}) else ""
+                # # Extracting information for Indica or Sativa
+                # indica_sativa = row.find("td", {"class": "xs1"}).img["title"] if row.find("td", {"class": "xs1"}) else ""
 
-                # Extracting information for Indoor or Outdoor
-                indoor_outdoor = row.find("td", {"class": "x20"}).img["title"] if row.find("td", {"class": "x20"}) else ""
+                # # Extracting information for Indoor or Outdoor
+                # indoor_outdoor = row.find("td", {"class": "x20"}).img["title"] if row.find("td", {"class": "x20"}) else ""
 
-                # Extracting information for Flowering Time(Days)
-                flowering_time = row.find("td", {"class": "graukleinX"}).span.text if row.find("td", {"class": "graukleinX"}) else ""
+                # # Extracting information for Flowering Time(Days)
+                # flowering_time = row.find("td", {"class": "graukleinX"}).span.text if row.find("td", {"class": "graukleinX"}) else ""
 
-                # Extracting information for Female Seeds(?)
-                female_seeds = row.find("td", {"class": "padL2"}).img["title"] if row.find("td", {"class": "padL2"}) else ""
+                # # Extracting information for Female Seeds(?)
+                # female_seeds = row.find("td", {"class": "padL2"}).img["title"] if row.find("td", {"class": "padL2"}) else ""
+
+                indica_sativa = row.find_element(By.CSS_SELECTOR, "td img[width='20']").get_attribute("title")
+                indoor_outdoor = row.find_element(By.CSS_SELECTOR, "td.x20 img[height='14']").get_attribute("title")
+                flowering_time = row.find_element(By.CSS_SELECTOR, "td.graukleinX span").text
+                female_seeds = row.find_element(By.CSS_SELECTOR, "td img[width='12']").get_attribute("title")
 
                 strain_url = f"https://en.seedfinder.eu/{link['href']}"
                 description = get_description(strain_url)
