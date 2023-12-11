@@ -38,7 +38,7 @@ descriptions = []
 for row in table.find_all("tr"):
     header = row.find("th", {"class": "xs1"})
     if header:
-        link = header.find_element(By.XPATH, ".//a")
+        link = header.find("a")
         if link:
             strain = link.get_text(strip=True)
             breeder = link["title"].split("(")[-1].strip(")")
