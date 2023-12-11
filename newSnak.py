@@ -45,7 +45,7 @@ for row in table.find_all("tr"):
 
             try:
                 # Extracting information for Indica or Sativa
-                indica_sativa = row.find("td", {"class": "greenC", "width": "20"}).img["title"] if row.find("td", {"class": "greenC", "width": "20"}) else ""
+                indica_sativa = row.find("td", {"class": "xs1"}).img["title"] if row.find("td", {"class": "xs1"}) else ""
 
                 # Extracting information for Indoor or Outdoor
                 indoor_outdoor = row.find("td", {"class": "x20"}).img["title"] if row.find("td", {"class": "x20"}) else ""
@@ -54,7 +54,7 @@ for row in table.find_all("tr"):
                 flowering_time = row.find("td", {"class": "graukleinX"}).span.text if row.find("td", {"class": "graukleinX"}) else ""
 
                 # Extracting information for Female Seeds(?)
-                female_seeds = row.find("td", {"class": "padL2", "width": "12"}).img["title"] if row.find("td", {"class": "padL2", "width": "12"}) else ""
+                female_seeds = row.find("td", {"class": "padL2"}).img["title"] if row.find("td", {"class": "padL2"}) else ""
 
                 strain_url = f"https://en.seedfinder.eu/{link['href']}"
                 description = get_description(strain_url)
@@ -67,8 +67,9 @@ for row in table.find_all("tr"):
                 flowering_time_list.append(flowering_time)
                 female_seeds_list.append(female_seeds)
 
-            except Exception as e:
+            except AttributeError as e:
                 print(f"Failed to process data for strain '{strain}'. Error: {e}")
+                continue
 
 # Create a DataFrame from the lists
 df = pd.DataFrame({
