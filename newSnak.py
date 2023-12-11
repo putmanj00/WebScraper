@@ -4,22 +4,37 @@ import pandas as pd
 
 # Function to extract description from strain-specific page
 def get_description(strain_url):
-    response = requests.get(strain_url)
+    try:
+        response = requests.get(strain_url)
+        response.raise_for_status()  # Raise an HTTPError for bad responses
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to fetch the strain-specific page for {strain_url}. Error: {e}")
+        return ""
+
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, "html.parser")
         part_inner_div = soup.find("div", class_="partInnerDiv")
-        paragraphs = part_inner_div.find_all("p", class_=lambda x: x and "top05em" in x)
-        description = " ".join([p.get_text(strip=True) for p in paragraphs])
-        return description
+        if part_inner_div:
+            paragraphs = part_inner_div.find_all("p", class_=lambda x: x and "top05em" in x)
+            description = " ".join([p.get_text(strip=True) for p in paragraphs])
+            return description
+        else:
+            print(f"Failed to find 'partInnerDiv' class for {strain_url}.")
     else:
-        print(f"Failed to fetch the strain-specific page. Status code: {response.status_code}")
-        return ""
+        print(f"Failed to fetch the strain-specific page for {strain_url}. Status code: {response.status_code}")
+
+    return ""
 
 # Define the URL for the "a" page
-url = "https://en.seedfinder.eu/database/strains/alphabetical/x"
+url = "https://en.seedfinder.eu/database/strains/alphabetical/a/"
 
 # Send a GET request to the URL
-response = requests.get(url)
+try:
+    response = requests.get(url)
+    response.raise_for_status()  # Raise an HTTPError for bad responses
+except requests.exceptions.RequestException as e:
+    print(f"Failed to fetch the page. Error: {e}")
+    exit()
 
 # Check if the request was successful (status code 200)
 if response.status_code == 200:
@@ -53,29 +68,33 @@ if response.status_code == 200:
                     strain = link.get_text(strip=True)
                     breeder = link["title"].split("(")[-1].strip(")")
 
-                    # Append strain and breeder to the lists
-                    strains.append(strain)
-                    breeders.append(breeder)
+                    try:
+                        # Find the table data cells for indica/sativa, indoor/outdoor, flowering time, and female seeds
+                        cells = row.find_all("td")
 
-                    # Find the table data cells for indica/sativa, indoor/outdoor, flowering time, and female seeds
-                    cells = row.find_all("td")
+                        # Extract indica/sativa information
+                        indica_sativa.append(cells[0].img["title"] if cells and cells[0].img else "")
 
-                    # Extract indica/sativa information
-                    indica_sativa.append(cells[0].img["title"] if cells else "")
+                        # Extract indoor/outdoor information
+                        indoor_outdoor.append(cells[1].img["title"] if len(cells) > 1 and cells[1].img else "")
 
-                    # Extract indoor/outdoor information
-                    indoor_outdoor.append(cells[1].img["title"] if len(cells) > 1 else "")
+                        # Extract flowering time information
+                        flowering_time.append(cells[2].span["title"] if len(cells) > 2 and cells[2].span else "")
 
-                    # Extract flowering time information
-                    flowering_time.append(cells[2].span["title"] if len(cells) > 2 else "")
+                        # Extract female seeds information
+                        female_seeds.append(cells[3].img["title"] if len(cells) > 3 and cells[3].img else "")
 
-                    # Extract female seeds information
-                    female_seeds.append(cells[3].img["title"] if len(cells) > 3 else "")
+                        # Extract strain-specific page URL and get description
+                        strain_url = f"https://en.seedfinder.eu/{link['href']}"
+                        description = get_description(strain_url)
+                        descriptions.append(description)
 
-                    # Extract strain-specific page URL and get description
-                    strain_url = f"https://en.seedfinder.eu/{link['href']}"
-                    description = get_description(strain_url)
-                    descriptions.append(description)
+                        # Append strain and breeder to the lists
+                        strains.append(strain)
+                        breeders.append(breeder)
+
+                    except Exception as e:
+                        print(f"Failed to process data for strain '{strain}'. Error: {e}")
 
         # Now, you have lists with all the information
         # Create a DataFrame using pandas
@@ -101,4 +120,4 @@ if response.status_code == 200:
     else:
         print("Table not found on the page.")
 else:
-    print("Failed to fetch the page. Status code:", response.status_code)
+    print(f"Failed to fetch the page {url}. Status code: {response.status_code}")
