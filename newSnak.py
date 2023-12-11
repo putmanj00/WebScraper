@@ -14,11 +14,15 @@ def get_description(url):
     description = ' '.join(paragraph.get_text(strip=True) for paragraph in paragraphs)
     return description
 
-# Set the path to Chromedriver (change this to the actual path on your system)
-chromedriver_path = '/path/to/chromedriver'
+# Set the version of Chromedriver to use (update this based on Chrome browser version)
+chromedriver_version = "120.0.6099.71"
 
-# Add Chromedriver path to the PATH environment variable
-os.environ['PATH'] = f"{os.environ['PATH']}:{os.path.dirname(chromedriver_path)}"
+# Download Chromedriver
+chromedriver_url = f"https://chromedriver.storage.googleapis.com/{chromedriver_version}/chromedriver_linux64.zip"
+os.system(f"wget {chromedriver_url} && unzip chromedriver_linux64.zip")
+
+# Set the path to Chromedriver
+chromedriver_path = os.path.abspath("chromedriver")
 
 # Configure Chrome options
 chrome_options = webdriver.ChromeOptions()
@@ -26,7 +30,7 @@ chrome_options.add_argument('--headless')  # Run Chrome in headless mode
 
 # Create a Chrome webdriver with the specified options
 try:
-    driver = webdriver.Chrome(options=chrome_options)
+    driver = webdriver.Chrome(executable_path=chromedriver_path, options=chrome_options)
     print("Chromedriver successfully initiated.")
 except Exception as e:
     print(f"Error initiating Chromedriver: {e}")
