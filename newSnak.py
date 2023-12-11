@@ -114,8 +114,7 @@ if response.status_code == 200:
         # Save the DataFrame to an Excel spreadsheet
         excel_writer = pd.ExcelWriter("cannabis_strains_data.xlsx", engine="xlsxwriter")
         df.to_excel(excel_writer, sheet_name="Cannabis Strains", index=False)
-        excel_writer.save()
-
+        excel_writer.close()  # Close the ExcelWriter object to save the file
         print("Data saved to cannabis_strains_data.xlsx")
 
     else:
