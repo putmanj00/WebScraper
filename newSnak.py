@@ -3,8 +3,6 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.chrome.options import Options as ChromeOptions
 
 # Function to get description from strain-specific page
 def get_description(url):
@@ -15,16 +13,20 @@ def get_description(url):
     description = ' '.join(paragraph.get_text(strip=True) for paragraph in paragraphs)
     return description
 
-# Set up ChromeOptions
-chrome_options = ChromeOptions()
-chrome_options.add_argument('--headless')
-chrome_options.add_argument('--disable-gpu')
+# Set the path to Chromedriver (no need to change if it's in /usr/local/bin/)
+chromedriver_path = '/usr/local/bin/chromedriver'
 
-# Set up ChromeService
-chrome_service = ChromeService(executable_path="/path/to/chromedriver")  # Replace with the path to chromedriver
+# Configure Chrome options
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--headless')  # Run Chrome in headless mode
 
-# Create a Chrome driver instance
-driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
+# Create a Chrome webdriver with the specified options and path to Chromedriver
+try:
+    driver = webdriver.Chrome(executable_path=chromedriver_path, options=chrome_options)
+    print("Chromedriver successfully initiated.")
+except Exception as e:
+    print(f"Error initiating Chromedriver: {e}")
+    exit(1)
 
 # URL for the "x" page
 url = "https://en.seedfinder.eu/database/strains/alphabetical/x/"
@@ -57,7 +59,6 @@ for row in table.find_all("tr"):
             breeder = link["title"].split("(")[-1].strip(")")
 
             try:
-
                 indica_sativa = row.find_element(By.CSS_SELECTOR, "td img[width='20']").get_attribute("title")
                 indoor_outdoor = row.find_element(By.CSS_SELECTOR, "td.x20 img[height='14']").get_attribute("title")
                 flowering_time = row.find_element(By.CSS_SELECTOR, "td.graukleinX span").text
