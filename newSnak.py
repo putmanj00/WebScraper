@@ -43,7 +43,8 @@ for row in table.find_all("tr"):
 
             try:
                 cells = row.find_all("td")
-                print(f"strain {strain} td cells are{cells}")
+                for cell in cell:
+                    print(f"strain {strain} td cells are{cells[cell]}")
                 # Extracting information for Indica or Sativa
                 indica_sativa = cells[2].img["title"] if len(cells) > 2 and cells[2].img else ""
 
@@ -84,5 +85,5 @@ df = pd.DataFrame({
 # Save the DataFrame to an Excel spreadsheet
 excel_writer = pd.ExcelWriter("cannabis_strains_data.xlsx", engine="xlsxwriter")
 df.to_excel(excel_writer, sheet_name="Cannabis Strains", index=False)
-excel_writer.save()
+excel_writer._save()
 print("Data saved to cannabis_strains_data.xlsx")
