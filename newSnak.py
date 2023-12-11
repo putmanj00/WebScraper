@@ -43,8 +43,7 @@ for row in table.find_all("tr"):
 
             try:
                 cells = row.find_all("td")
-                for cell in cells:
-                    print(f"strain {strain} td cells are{cells[cell.index]}")
+                print(f"strain {strain} td cells are{cells}")
                 # Extracting information for Indica or Sativa
                 indica_sativa = cells[2].img["title"] if len(cells) > 2 and cells[2].img else ""
 
