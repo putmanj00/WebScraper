@@ -17,7 +17,10 @@ def get_description(url):
 url = "https://en.seedfinder.eu/database/strains/alphabetical/x/"
 
 # Set up the Selenium WebDriver
-driver = webdriver.Chrome()
+options = webdriver.ChromeOptions()
+options.add_argument('--headless')
+options.add_argument('--disable-gpu')
+driver = webdriver.Chrome(options=options)
 
 # Send an HTTP request to the URL
 driver.get(url)
