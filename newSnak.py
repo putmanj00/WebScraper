@@ -1,6 +1,8 @@
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.chrome.options import Options
 
 # Function to get description from strain-specific page
 def get_description(url):
@@ -22,8 +24,17 @@ flowering_time_list = []
 female_seeds_list = []
 descriptions = []
 
+# Set up Chrome options
+chrome_options = Options()
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--disable-dev-shm-usage')
+
+# Use the non-headless version of Chrome
+driver_path = "/usr/bin/chromedriver"  # Adjust the path if needed
+chrome_service = ChromeService(executable_path=driver_path)
+
 # Initialize Chrome WebDriver
-driver = webdriver.Chrome()
+driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
 
 # Send an HTTP request to the URL
 driver.get(url)
