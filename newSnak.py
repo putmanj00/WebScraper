@@ -46,33 +46,33 @@ for row in table.find_all("tr"):
             strain = link.get_text(strip=True)
             breeder = link["title"].split("(")[-1].strip(")")
 
-            try:
-                # Find the table data cells for indica/sativa, indoor/outdoor, flowering time, and female seeds
-                cells = row.find_all("tr")
+    try:
+        # Find the table data cells for indica/sativa, indoor/outdoor, flowering time, and female seeds
+        cells = row.find_all("td")
 
-                # Extract indica/sativa information
-                indica_sativa.append(cells[2].img["title"] if cells and cells[2].img and "width=\"20\"" in str(cells[2].img) else "")
+        # Extract indica/sativa information
+        indica_sativa.append(cells[2].img["title"] if cells and cells[2].img and "width=\"20\"" in str(cells[2].img) else "")
 
-                # Extract indoor/outdoor information
-                indoor_outdoor.append(cells[3].img["title"] if len(cells) > 3 and cells[3].img and "width=\"13\"" in str(cells[3].img) else "")
+        # Extract indoor/outdoor information
+        indoor_outdoor.append(cells[3].img["title"] if len(cells) > 3 and cells[3].img and "width=\"13\"" in str(cells[3].img) else "")
 
-                # Extract flowering time information
-                flowering_time.append(cells[4].span["title"] if len(cells) > 4 and cells[4].span and "class=\"graukleinX\"" in str(cells[4]) else "")
+        # Extract flowering time information
+        flowering_time.append(cells[4].span["title"] if len(cells) > 4 and cells[4].span and "class=\"graukleinX\"" in str(cells[4]) else "")
 
-                # Extract female seeds information
-                female_seeds.append(cells[5].img["title"] if len(cells) > 5 and cells[5].img and "class=\"padL2\"" in str(cells[5].img) else "")
+        # Extract female seeds information
+        female_seeds.append(cells[5].img["title"] if len(cells) > 5 and cells[5].img and "class=\"padL2\"" in str(cells[5].img) else "")
 
-                # Extract strain-specific page URL and get description
-                strain_url = f"https://en.seedfinder.eu/{link['href']}"
-                description = get_description(strain_url)
-                descriptions.append(description)
+        # Extract strain-specific page URL and get description
+        strain_url = f"https://en.seedfinder.eu/{link['href']}"
+        description = get_description(strain_url)
+        descriptions.append(description)
 
-                # Append strain and breeder to the lists
-                strains.append(strain)
-                breeders.append(breeder)
+        # Append strain and breeder to the lists
+        strains.append(strain)
+        breeders.append(breeder)
 
-            except Exception as e:
-                print(f"Failed to process data for strain '{strain}'. Error: {e}")
+    except Exception as e:
+        print(f"Failed to process data for strain '{strain}'. Error: {e}")
 
 # Create a DataFrame from the lists
 df = pd.DataFrame({
