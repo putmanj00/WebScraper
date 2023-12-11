@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import xlsxwriter
 
 # Function to extract description from strain-specific page
 def get_description(strain_url):
@@ -26,7 +27,7 @@ def get_description(strain_url):
     return ""
 
 # Define the URL for the "a" page
-url = "https://en.seedfinder.eu/database/strains/alphabetical/x"
+url = "https://en.seedfinder.eu/database/strains/alphabetical/x/"
 
 # Send a GET request to the URL
 try:
