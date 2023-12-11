@@ -6,7 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options as ChromeOptions
-from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.chrome import ChromeDriverManager  # Import ChromeDriverManager
 
 # Function to get description from strain-specific page
 def get_description(url):
@@ -17,26 +17,11 @@ def get_description(url):
     description = ' '.join(paragraph.get_text(strip=True) for paragraph in paragraphs)
     return description
 
-# Download the latest Chromedriver version
-os.system("wget https://chromedriver.storage.googleapis.com/LATEST_RELEASE -O chromedriver_version.txt")
-with open("chromedriver_version.txt", "r") as file:
-    chromedriver_version = file.read().strip()
-
-# Download Chromedriver
-chromedriver_url = f"https://chromedriver.storage.googleapis.com/{chromedriver_version}/chromedriver_linux64.zip"
-os.system(f"wget {chromedriver_url} && unzip chromedriver_linux64.zip")
-
-# Set the path to Chromedriver
-chromedriver_path = os.path.abspath("chromedriver")
-
-# Configure Chrome options
+# Use ChromeDriverManager to automatically download the appropriate Chromedriver version
 chrome_options = ChromeOptions()
 chrome_options.add_argument('--headless')  # Run Chrome in headless mode
-
-# Create a Chrome webdriver with the specified options
 try:
-    chrome_service = ChromeService(chromedriver_path)
-    driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
+    driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=chrome_options)
     print("Chromedriver successfully initiated.")
 except Exception as e:
     print(f"Error initiating Chromedriver: {e}")
