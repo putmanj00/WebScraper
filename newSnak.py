@@ -1,6 +1,9 @@
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+
 
 # Function to get description from strain-specific page
 def get_description(url):
