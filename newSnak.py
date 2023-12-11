@@ -21,7 +21,8 @@ def get_description(url):
 chrome_options = ChromeOptions()
 chrome_options.add_argument('--headless')  # Run Chrome in headless mode
 try:
-    driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=chrome_options)
+    # Disable 'executable_path' argument for compatibility
+    driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
     print("Chromedriver successfully initiated.")
 except Exception as e:
     print(f"Error initiating Chromedriver: {e}")
