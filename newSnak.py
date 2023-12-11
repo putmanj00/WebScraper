@@ -22,7 +22,7 @@ chrome_options.add_argument('--headless')  # Run Chrome in headless mode
 
 # Create a Chrome webdriver with the specified options and path to Chromedriver
 try:
-    driver = webdriver.Chrome(executable_path=chromedriver_path, options=chrome_options)
+    driver = webdriver.Chrome(options=chrome_options, executable_path=chromedriver_path)
     print("Chromedriver successfully initiated.")
 except Exception as e:
     print(f"Error initiating Chromedriver: {e}")
