@@ -48,7 +48,7 @@ for row in table.find_all("tr"):
 
             try:
                 # Find the table data cells for indica/sativa, indoor/outdoor, flowering time, and female seeds
-                cells = row.find_all("td")
+                cells = row.find_all("tr")
 
                 # Extract indica/sativa information
                 indica_sativa.append(cells[2].img["title"] if cells and cells[2].img and "width=\"20\"" in str(cells[2].img) else "")
