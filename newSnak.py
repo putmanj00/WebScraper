@@ -33,33 +33,33 @@ for letter in strainAlphabeticalList:
     # Check if the table is found
     if table:
         # Iterate over each table row
-        for row in table.find_all('tr'):
-            # Find the table header within the row
-            header = row.find('th', {'class': 'xs1'})
+        for row in table.find_all("tr"):
+    # Find the table header within the row
+            header = row.find("th", {"class": "xs1"})
 
             # Check if the header is found
             if header:
                 # Extract the strain and breeder from the href attribute
-                link = header.find('a')
+                link = header.find("a")
                 if link:
                     strain = link.get_text(strip=True)
-                    breeder = link['title'].split('(')[-1].strip(')')
+                    breeder = link["title"].split("(")[-1].strip(")")
 
                     try:
                         # Find the table data cells for indica/sativa, indoor/outdoor, flowering time, and female seeds
-                        cells = row.find_all('td')
+                        cells = row.find_all("td")
 
                         # Extract indica/sativa information
-                        indica_sativa.append(cells[0].img['title'] if cells and cells[0].img and 'width="20"' in str(cells[0].img) else "")
+                        indica_sativa.append(cells[2].img["title"] if cells and cells[2].img and "width=\"20\"" in str(cells[2].img) else "")
 
                         # Extract indoor/outdoor information
-                        indoor_outdoor.append(cells[1].img['title'] if len(cells) > 1 and cells[1].img and 'width="20"' in str(cells[1].img) else "")
+                        indoor_outdoor.append(cells[3].img["title"] if len(cells) > 3 and cells[3].img and "width=\"13\"" in str(cells[3].img) else "")
 
                         # Extract flowering time information
-                        flowering_time.append(cells[2].span['title'] if len(cells) > 2 and cells[2].span and 'class="graukleinX"' in str(cells[2]) else "")
+                        flowering_time.append(cells[4].span["title"] if len(cells) > 4 and cells[4].span and "class=\"graukleinX\"" in str(cells[4]) else "")
 
                         # Extract female seeds information
-                        female_seeds.append(cells[3].img['title'] if len(cells) > 3 and cells[3].img and 'class="padL2"' in str(cells[3].img) else "")
+                        female_seeds.append(cells[5].img["title"] if len(cells) > 5 and cells[5].img and "class=\"padL2\"" in str(cells[5].img) else "")
 
                         # Extract strain-specific page URL and get description
                         strain_url = f"https://en.seedfinder.eu/{link['href']}"
