@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -13,16 +14,19 @@ def get_description(url):
     description = ' '.join(paragraph.get_text(strip=True) for paragraph in paragraphs)
     return description
 
-# Set the path to Chromedriver (no need to change if it's in /usr/local/bin/)
-chromedriver_path = '/usr/local/bin/chromedriver'
+# Set the path to Chromedriver (change this to the actual path on your system)
+chromedriver_path = '/path/to/chromedriver'
+
+# Add Chromedriver path to the PATH environment variable
+os.environ['PATH'] = f"{os.environ['PATH']}:{os.path.dirname(chromedriver_path)}"
 
 # Configure Chrome options
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument('--headless')  # Run Chrome in headless mode
 
-# Create a Chrome webdriver with the specified options and path to Chromedriver
+# Create a Chrome webdriver with the specified options
 try:
-    driver = webdriver.Chrome(options=chrome_options, executable_path=chromedriver_path)
+    driver = webdriver.Chrome(options=chrome_options)
     print("Chromedriver successfully initiated.")
 except Exception as e:
     print(f"Error initiating Chromedriver: {e}")
