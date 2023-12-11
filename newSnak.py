@@ -43,16 +43,20 @@ for row in table.find_all("tr"):
 
             try:
                 # Extracting information for Indica or Sativa
-                indica_sativa = row.find("td", {"class": "greenC", "width": "20"}).img["title"] if row.find("td", {"class": "greenC", "width": "20"}) else ""
+                indica_sativa = row.find("td", {"class": "greenC", "width": "20"})
+                indica_sativa = indica_sativa.img["title"] if indica_sativa and indica_sativa.img else ""
 
                 # Extracting information for Indoor or Outdoor
-                indoor_outdoor = row.find("td", {"class": "x20"}).img["title"] if row.find("td", {"class": "x20"}) else ""
+                indoor_outdoor = row.find("td", {"class": "x20"})
+                indoor_outdoor = indoor_outdoor.img["title"] if indoor_outdoor and indoor_outdoor.img else ""
 
                 # Extracting information for Flowering Time(Days)
-                flowering_time = row.find("td", {"class": "graukleinX"}).span.text if row.find("td", {"class": "graukleinX"}) else ""
+                flowering_time = row.find("td", {"class": "graukleinX"})
+                flowering_time = flowering_time.span.text if flowering_time and flowering_time.span else ""
 
                 # Extracting information for Female Seeds(?)
-                female_seeds = row.find("td", {"class": "padL2", "width": "12"}).img["title"] if row.find("td", {"class": "padL2", "width": "12"}) else ""
+                female_seeds = row.find("td", {"class": "padL2", "width": "12"})
+                female_seeds = female_seeds.img["title"] if female_seeds and female_seeds.img else ""
 
                 strain_url = f"https://en.seedfinder.eu/{link['href']}"
                 description = get_description(strain_url)
