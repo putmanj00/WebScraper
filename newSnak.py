@@ -33,9 +33,6 @@ def get_description_and_parents(url):
     if prnts_div:
         orig_li = prnts_div.find('li', class_='Orig')
         if orig_li:
-            strong_tag = orig_li.find('strong')
-            if strong_tag:
-                parent1 = strong_tag.get_text(strip=True)
 
             # Extracting parent2
             links = orig_li.find_all('a')
@@ -43,13 +40,16 @@ def get_description_and_parents(url):
 
             # Check if there's only one link (one parent)
             if len(links) == 1:
-                parent2 = links[0].get_text(strip=True)
+                parent1 = links[0].get_text(strip=True)
+                parent2 = ""
             else:
                 # Multiple links, so extract parts for parent2
                 for link in links[1:]:
+                    parent1 = links[0].get_text(strip=True)
                     parent2_parts.append(link.get_text(strip=True))
                 parent2 = ' x '.join(parent2_parts)
 
+    print(f"parent1 is: {parent1} and parent2 is: {parent2}")
     return description, parent1, parent2
 
 # Initialize lists to store data
@@ -64,7 +64,7 @@ parent1_list = []
 parent2_list = []
 
 # strainAlphabeticalList = ["", "1234567890", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-strainAlphabeticalList = ["x"]
+strainAlphabeticalList = ["f-all"]
 
 # Iterate over each alphabet page
 for letter in strainAlphabeticalList:
@@ -115,7 +115,7 @@ for letter in strainAlphabeticalList:
                         parent2_list.append(parent2)
                         
                         # Print information for debugging
-                        print(f"Indoor or Outdoor: {indoor_outdoor}\n\n")
+                        # print(f"Indoor or Outdoor: {indoor_outdoor}\n\n")
                         # print(f"Strain: {strain}, Breeder: {breeder}, Description: {description}")
                         # print(f"Parent1: {parent1}, Parent2: {parent2}")
 
