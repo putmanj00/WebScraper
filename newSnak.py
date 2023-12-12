@@ -22,7 +22,7 @@ def get_description_and_parents(url):
     else:
         print(f"No second <p> element found for this url: {url}")
 
-    description = description1 + description2
+    description = description1 + "\n" + description2
 
     # Extract parent information
     parent1 = None
@@ -100,7 +100,7 @@ for letter in strainAlphabeticalList:
                             cells = row.find_all("td")
 
                         indica_sativa.append(cells[1].img["title"] if cells and cells[1].img and "width=\"20\"" in str(cells[1].img) else "")
-                        indoor_outdoor.append(cells[2].img["title"] if len(cells) and cells[2].img and "class=\"x20\"" in str(cells[2].img) else "")
+                        indoor_outdoor.append(cells[2].img["title"] if len(cells) and cells[2].img and "width=\"13\"" and "class=\"x20\"" in str(cells[2].img) else "")
                         flowering_time.append(cells[3].span.get_text(strip=True) if len(cells) and cells[3].span and "class=\"graukleinX\"" in str(cells[3]) else "")
                         female_seeds.append(cells[4].img["title"] if len(cells) and cells[4].img and "width=\"12\"" and "class=\"padL2\"" in str(cells[4].img) else "")
                         descriptions.append(description)
