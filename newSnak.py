@@ -86,10 +86,10 @@ for letter in strainAlphabeticalList:
                         if row.find_all("td"):
                             cells = row.find_all("td")
 
-                        indica_sativa.append(cells[2].img["title"] if cells and cells[2].img and "width=\"20\"" in str(cells[2].img) else "")
-                        indoor_outdoor.append(cells[3].img["title"] if len(cells) > 3 and cells[3].img and "width=\"13\"" in str(cells[3].img) else "")
-                        flowering_time.append(cells[4].span["title"] if len(cells) > 4 and cells[4].span and "class=\"graukleinX\"" in str(cells[4]) else "")
-                        female_seeds.append(cells[5].img["title"] if len(cells) > 5 and cells[5].img and "class=\"padL2\"" in str(cells[5].img) else "")
+                        indica_sativa.append(cells[1].img["title"] if cells and cells[1].img and "width=\"20\"" in str(cells[1].img) else "")
+                        indoor_outdoor.append(cells[2].img["title"] if len(cells) and cells[2].img and "width=\"13\"" in str(cells[2].img) else "")
+                        flowering_time.append(cells[3].span["title"] if len(cells) and cells[3].span and "class=\"graukleinX\"" in str(cells[3]) else "")
+                        female_seeds.append(cells[4].img["title"] if len(cells) and cells[4].img and "width=\"12\"" and "class=\"padL2\"" in str(cells[4].img) else "")
                         descriptions.append(description)
                         parent1_list.append(parent1)
                         parent2_list.append(parent2)
