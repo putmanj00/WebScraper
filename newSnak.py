@@ -41,6 +41,7 @@ for letter in strainAlphabeticalList:
             if header:
                 # Extract the strain and breeder from the href attribute
                 link = header.find("a")
+                print(f"link header is {link}")
                 if link:
                     strain = link.get_text(strip=True)
                     breeder = link["title"].split("(")[-1].strip(")")
@@ -90,5 +91,5 @@ df = pd.DataFrame({
 # Save the DataFrame to an Excel spreadsheet
 excel_writer = pd.ExcelWriter("cannabis_strains_data.xlsx", engine="xlsxwriter")
 df.to_excel(excel_writer, sheet_name="Cannabis Strains", index=False)
-excel_writer.close()  # Close the ExcelWriter object to save the file
+excel_writer._save()  # Close the ExcelWriter object to save the file
 print("Data saved to cannabis_strains_data.xlsx")
