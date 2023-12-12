@@ -1,12 +1,9 @@
-import os
-import requests
 import pandas as pd
+import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options as ChromeOptions
-from webdriver_manager.chrome import ChromeDriverManager  # Import ChromeDriverManager
+from webdriver_manager.chrome import ChromeDriverManager
 
 # Function to get description from strain-specific page
 def get_description(url):
@@ -20,8 +17,9 @@ def get_description(url):
 # Use ChromeDriverManager to automatically download the appropriate Chromedriver version
 chrome_options = ChromeOptions()
 chrome_options.add_argument('--headless')  # Run Chrome in headless mode
+
+# Initialize Chrome webdriver
 try:
-    # Disable 'executable_path' argument for compatibility
     driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
     print("Chromedriver successfully initiated.")
 except Exception as e:
