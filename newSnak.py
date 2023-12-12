@@ -63,8 +63,8 @@ descriptions = []
 parent1_list = []
 parent2_list = []
 
-# strainAlphabeticalList = ["", "1234567890", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-strainAlphabeticalList = ["f-all"]
+# strainAlphabeticalList = ["a-all", "1234567890", "b-all", "c-all", "d-all", "e-all", "f-all", "g-all", "h-all", "i", "j-all", "k-all", "l-all", "m-all", "n-all", "o-all", "p-all", "q", "r-all", "s-all", "t-all", "u", "v", "w-all", "x", "y", "z"]
+strainAlphabeticalList = ["a-all", "1234567890", "b-all", "c-all", "d-all", "e-all", "f-all", "g-all", "h-all", "i", "j-all", "k-all", "l-all", "m-all", "n-all", "o-all", "p-all", "q", "r-all", "s-all", "t-all", "u", "v", "w-all", "x", "y", "z"]
 
 # Iterate over each alphabet page
 for letter in strainAlphabeticalList:
