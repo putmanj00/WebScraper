@@ -57,7 +57,7 @@ parent1_list = []
 parent2_list = []
 
 # strainAlphabeticalList = ["", "1234567890", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-strainAlphabeticalList = ["x"]
+strainAlphabeticalList = ["b", "c"]
 
 # Iterate over each alphabet page
 for letter in strainAlphabeticalList:
@@ -100,7 +100,7 @@ for letter in strainAlphabeticalList:
                             cells = row.find_all("td")
 
                         indica_sativa.append(cells[1].img["title"] if cells and cells[1].img and "width=\"20\"" in str(cells[1].img) else "")
-                        indoor_outdoor.append(cells[2].img["title"] if len(cells) and cells[2].img and "width=\"13\"" and "class=\"x20\"" in str(cells[2].img) else "")
+                        indoor_outdoor.append(cells[2].img["title"] if len(cells) and cells[2].img and "width=\"13\"" in str(cells[2].img) else "")
                         flowering_time.append(cells[3].span.get_text(strip=True) if len(cells) and cells[3].span and "class=\"graukleinX\"" in str(cells[3]) else "")
                         female_seeds.append(cells[4].img["title"] if len(cells) and cells[4].img and "width=\"12\"" and "class=\"padL2\"" in str(cells[4].img) else "")
                         descriptions.append(description)
