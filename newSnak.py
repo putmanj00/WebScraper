@@ -14,6 +14,7 @@ def get_description_and_parents(url):
         description1 = ' '.join(paragraph.get_text(strip=True) for paragraph in paragraphs1)
     else:
         print(f"No first <p> element found for this url: {url}")
+    
     # Check for both classes in the 'class_' parameter
     paragraphs2 = part_inner_div.find_all('p', class_=lambda value: value and ('top05em justi left' in value or 'top05em justi' in value))
 
@@ -39,9 +40,15 @@ def get_description_and_parents(url):
             # Extracting parent2
             links = orig_li.find_all('a')
             parent2_parts = []
-            for link in links[1:]:
-                parent2_parts.append(link.get_text(strip=True))
-            parent2 = ' x '.join(parent2_parts)
+
+            # Check if there's only one link (one parent)
+            if len(links) == 1:
+                parent2 = links[0].get_text(strip=True)
+            else:
+                # Multiple links, so extract parts for parent2
+                for link in links[1:]:
+                    parent2_parts.append(link.get_text(strip=True))
+                parent2 = ' x '.join(parent2_parts)
 
     return description, parent1, parent2
 
